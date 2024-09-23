@@ -1,1 +1,3 @@
 # Decentralized-Freelance-Marketplace
+
+The Decentralized Freelance Marketplace is a blockchain-based platform built on the Internet Computer Protocol (ICP) that connects freelancers with clients in a secure and transparent manner. By leveraging smart contracts, payments are securely held in escrow until project completion, ensuring trust between parties. The platform features job listings, a bidding system, a decentralized reputation system, and integrated dispute resolution. With lower fees and global access, our marketplace aims to empower freelancers and clients alike, fostering a vibrant and trustworthy community in the decentralized economy
