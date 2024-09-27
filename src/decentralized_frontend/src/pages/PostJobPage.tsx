@@ -8,9 +8,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { X } from 'lucide-react'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { postJob } from '@/redux/slices/jobSlice'
 
 export default function PostJobPage() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const { status } = useAppSelector(state => state.jobs)
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
@@ -32,11 +37,26 @@ export default function PostJobPage() {
     setSkills(skills.filter(skill => skill !== skillToRemove))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Posting job:', { title, description, category, budgetMin, budgetMax, duration, skills })
-    navigate('/jobs/my-listings')
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const jobData = {
+    title,
+    description,
+    category,
+    budget: BigInt(budgetMax),
+    duration,
+    skills,
+    employer: 'Current User',
+  };
+
+  try {
+    await dispatch(postJob(jobData)).unwrap();
+    navigate('/jobs/my-listings');
+  } catch (error) {
+    console.error('Failed to post job:', error);
   }
+};
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -152,7 +172,9 @@ export default function PostJobPage() {
           </form>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit} className="w-full">Post Job</Button>
+          <Button onClick={handleSubmit} className="w-full" disabled={status === 'loading'}>
+            {status === 'loading' ? 'Posting...' : 'Post Job'}
+          </Button>
         </CardFooter>
       </Card>
     </div>

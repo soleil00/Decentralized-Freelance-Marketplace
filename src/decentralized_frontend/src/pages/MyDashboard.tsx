@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2 } from 'lucide-react'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { fetchJobs } from '@/redux/slices/jobSlice'
 
 const jobAds = [
   {
@@ -33,6 +35,18 @@ const jobAds = [
 ]
 
 export default function DashboardPage() {
+
+  const dispatch = useAppDispatch()
+  const {jobs} = useAppSelector(state => state.jobs)
+  useEffect(() => {
+    dispatch(fetchJobs())
+  },[dispatch])
+
+  useEffect(() => {
+    if (jobs) {
+    console.log(jobs)
+  }
+  },[])
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Your Job Listings</h1>

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import sidebarReducer from "./sidebarSlice";
 import appReducer from "./slices/authSlice";
+import jobReducer from "./slices/jobSlice";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
 
@@ -16,7 +17,8 @@ const peristAuthReducer = persistReducer(persistConfig, appReducer);
 export function makeStore() {
   return configureStore({
     reducer: {
-      auth:appReducer
+      auth: appReducer,
+      jobs: jobReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

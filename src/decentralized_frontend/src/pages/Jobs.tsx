@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,52 +8,29 @@ import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { Search, Briefcase, DollarSign, Clock, Tag } from 'lucide-react'
 import OnboardingDialog from '@/components/OnBoardingDialog'
-
-// Mock data for job listings
-const jobListings = [
-  {
-    id: '1',
-    title: "Smart Contract Developer",
-    description: "We're seeking an experienced Solidity developer to create and audit smart contracts for our DeFi project.",
-    budget: "5000-10000 ICP",
-    skills: ["Solidity", "Ethereum", "Smart Contracts"],
-    postedDate: "2 days ago",
-    proposals: 8,
-    category: "Blockchain"
-  },
-  {
-    id: '2',
-    title: "UI/UX Designer for Web3 Application",
-    description: "Design an intuitive and engaging user interface for our decentralized marketplace application.",
-    budget: "3000-6000 ICP",
-    skills: ["UI/UX", "Figma", "Web3"],
-    postedDate: "1 week ago",
-    proposals: 15,
-    category: "Design"
-  },
-  {
-    id: '3',
-    title: "Content Writer for Blockchain Blog",
-    description: "Create engaging and informative content about blockchain technology, cryptocurrencies, and decentralized applications.",
-    budget: "500-1000 ICP per article",
-    skills: ["Content Writing", "Blockchain Knowledge", "SEO"],
-    postedDate: "3 days ago",
-    proposals: 12,
-    category: "Writing"
-  },
-]
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { formatBudget, timeAgo } from '@/lib/helper'
+import { fetchJobs } from '@/redux/slices/jobSlice'
 
 export default function JobListingPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [category, setCategory] = useState("All")
   const [budgetRange, setBudgetRange] = useState([0, 10000])
 
-  const filteredJobs = jobListings.filter(job => 
+  const dispatch = useAppDispatch()
+  const { jobs, isLoading } = useAppSelector(state => state.jobs)
+  
+  useEffect(() => {
+    dispatch(fetchJobs())
+  },[dispatch])
+
+
+  const filteredJobs = jobs.filter(job => 
     (job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (category === "All" || job.category === category) &&
-    (parseInt(job.budget.split('-')[0]) >= budgetRange[0] &&
-    parseInt(job.budget.split('-')[1]) <= budgetRange[1])
+    (parseInt(formatBudget(job.budget)) >= budgetRange[0] &&
+    parseInt(formatBudget(job.budget)) <= budgetRange[1])
   )
 
   
@@ -130,15 +107,15 @@ export default function JobListingPage() {
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <DollarSign className="mr-1 h-4 w-4" />
-                      {job.budget} ICP
+                      {job.budget.toString()} ICP
                     </div>
                     <div className="flex items-center">
                       <Clock className="mr-1 h-4 w-4" />
-                      {job.postedDate}
+                      {timeAgo(job.datePosted)}
                     </div>
                     <div className="flex items-center">
                       <Briefcase className="mr-1 h-4 w-4" />
-                      {job.proposals} proposals
+                      {job.bids.length} proposals
                     </div>
                   </div>
                 </CardContent>
